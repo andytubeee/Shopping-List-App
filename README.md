@@ -1,4 +1,4 @@
-# Shopping-List-App
+# Shopplst
 
 <b>MERN</b> Full Stack Application.
 
