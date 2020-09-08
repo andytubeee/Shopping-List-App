@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, useEffect, useState } from 'react';
 import { Container, ListGroup, ListGroupItem, Button } from 'reactstrap';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import { v1 as uuid } from 'uuid';
@@ -8,6 +8,14 @@ class ShoppingList extends Component {
     items: [],
     isEmpty: true,
     emptyHeading: 'Empty',
+  };
+
+  removeItem = (arr, value) => {
+    var index = arr.indexOf(value);
+    if (index > -1) {
+      arr.splice(index, 1);
+    }
+    return arr;
   };
 
   render() {
@@ -39,6 +47,19 @@ class ShoppingList extends Component {
               <CSSTransition key={id} timeout={500} classNames="fade">
                 <ListGroupItem>
                   <Button
+                    className="edit-btn"
+                    color="primary"
+                    size="sm"
+                    onClick={() => {
+                      const newName = prompt('Enter New Name: ');
+                      this.setState({
+                        items: [{ id: uuid(), name: newName }],
+                      });
+                    }}
+                  >
+                    Edit
+                  </Button>
+                  <Button
                     className="remove-btn"
                     color="danger"
                     size="sm"
@@ -46,13 +67,12 @@ class ShoppingList extends Component {
                       this.setState((state) => ({
                         items: state.items.filter((item) => item.id !== id),
                       }));
-
-                      setTimeout(() => {
+                      if (items) {
                         this.setState({
                           isEmpty: true,
                           emptyHeading: 'Empty',
                         });
-                      }, 600);
+                      }
                     }}
                   >
                     &times;
