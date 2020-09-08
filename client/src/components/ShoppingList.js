@@ -1,45 +1,101 @@
 import React, { Component, useEffect, useState } from 'react';
-import { Container, ListGroup, ListGroupItem, Button } from 'reactstrap';
+import {
+  Container,
+  ListGroup,
+  ListGroupItem,
+  Button,
+  Modal,
+  ModalHeader,
+  ModalBody,
+  Form,
+  FormGroup,
+  Label,
+  Input,
+} from 'reactstrap';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
+import { connect } from 'react-redux';
+import { getItems, delItem, editItem, addItem } from '../actions/itemActions';
+import PropTypes from 'prop-types';
 import { v1 as uuid } from 'uuid';
+import Swal from 'sweetalert2';
 
 class ShoppingList extends Component {
   state = {
-    items: [],
-    isEmpty: true,
-    emptyHeading: 'Empty',
+    modal: false,
+    name: '',
   };
 
-  removeItem = (arr, value) => {
-    var index = arr.indexOf(value);
-    if (index > -1) {
-      arr.splice(index, 1);
+  componentDidMount() {
+    this.props.getItems();
+  }
+
+  toggle = () => {
+    this.setState({
+      modal: !this.state.modal,
+    });
+  };
+
+  onChange = e => {
+    if (e.target.value.length >= 0) {
+      this.setState({
+        [e.target.name]: e.target.value,
+      });
     }
-    return arr;
+  };
+
+  // onSubmit = (e, id) => {
+  //   e.preventDefault();
+  //   if (this.state.name.length > 0) {
+  //     const newItem = {
+  //       id: uuid(),
+  //       name: this.state.name,
+  //     };
+
+  //     // Add
+  //     this.props.addItem(newItem);
+  //     // Delete
+  //     this.props.delItem(id);
+  //     // Close form
+  //     this.toggle();
+  //   } else {
+  //     Swal.fire({
+  //       icon: 'error',
+  //       title: 'Oops...',
+  //       text: 'New item name cannot be empty!',
+  //       footer: '<a href>Please go back and try again</a>',
+  //     });
+  //   }
+  // };
+
+  onDeleteClick = id => {
+    this.props.delItem(id);
+  };
+
+  onEditClick = id => {
+    if (this.state.name.length > 0) {
+      const newItem = {
+        id: uuid(),
+        name: this.state.name,
+      };
+      this.props.editItem({ newItem, id }); // Remove the item
+      this.props.addItem(newItem);
+
+      this.toggle();
+    } else {
+      Swal.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text: 'New item name cannot be empty!',
+        footer: '<a href>Please go back and try again</a>',
+      });
+    }
   };
 
   render() {
-    const { items } = this.state;
+    const items = this.props.item.items;
     return (
       <Container>
-        <Button
-          color="dark"
-          style={{ marginBottom: '2rem' }}
-          onClick={() => {
-            const name = prompt('Enter Item: ');
-            if (name) {
-              this.setState((state) => ({
-                items: [...state.items, { id: uuid(), name }],
-                isEmpty: false,
-                emptyHeading: '',
-              }));
-            }
-          }}
-        >
-          Add Item
-        </Button>
-
-        <h2 className="text-center">{this.state.emptyHeading}</h2>
+        {/* <h2 className="text-center">Empty</h2> */}
 
         <ListGroup>
           <TransitionGroup className="shopping-list">
@@ -51,34 +107,17 @@ class ShoppingList extends Component {
                     className="edit-btn"
                     color="primary"
                     size="sm"
-                    onClick={() => {
-                      const newName = prompt('Enter New Name: ');
-                      this.setState({
-                        items: [{ id: uuid(), name: newName }],
-                      });
-                    }}
+                    onClick={this.toggle}
                   >
                     Edit
                   </Button>
+
                   {/* Add Btn */}
                   <Button
                     className="remove-btn"
                     color="danger"
                     size="sm"
-                    onClick={() => {
-                      this.setState((state) => ({
-                        items: state.items.filter((item) => item.id !== id),
-                      }));
-
-                      if (items.length == 1) {
-                        setTimeout(() => {
-                          this.setState({
-                            isEmpty: true,
-                            emptyHeading: 'Empty',
-                          });
-                        }, 600);
-                      }
-                    }}
+                    onClick={this.onDeleteClick.bind(this, id)}
                   >
                     &times;
                   </Button>
@@ -88,8 +127,50 @@ class ShoppingList extends Component {
             ))}
           </TransitionGroup>
         </ListGroup>
+        {items.map((id, name) => (
+          <Modal isOpen={this.state.modal} toggle={this.toggle}>
+            <ModalHeader toggle={this.toggle}>Edit Item</ModalHeader>
+            <ModalBody>
+              <Form onSubmit={this.onEditClick.bind(this, id)}>
+                <FormGroup>
+                  <Label for="item">Item Name</Label>
+                  <Input
+                    type="text"
+                    name="name"
+                    id="item"
+                    placeholder="Add Shopplst Item"
+                    onChange={this.onChange}
+                  />
+                </FormGroup>
+              </Form>
+              <Button
+                color="dark"
+                style={{ marginTop: '1.5rem' }}
+                block
+                onClick={this.onEditClick.bind(this, id)}
+              >
+                Edit
+              </Button>
+            </ModalBody>
+          </Modal>
+        ))}
       </Container>
     );
   }
 }
-export default ShoppingList;
+
+ShoppingList.propTypes = {
+  getItems: PropTypes.func.isRequired,
+  item: PropTypes.object.isRequired,
+};
+
+const mapStateToProps = state => ({
+  item: state.item,
+});
+
+export default connect(mapStateToProps, {
+  getItems,
+  delItem,
+  editItem,
+  addItem,
+})(ShoppingList);
