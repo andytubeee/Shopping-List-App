@@ -23,10 +23,27 @@ class ShoppingList extends Component {
   state = {
     modal: false,
     name: '',
+    Empty: false,
   };
 
   componentDidMount() {
     this.props.getItems();
+    if (this.props.item.items.length == 0) {
+      this.setState({ Empty: true });
+    } else {
+      this.setState({ Empty: false });
+    }
+    console.log(this.state.Empty);
+  }
+
+  componentDidUpdate() {
+    setTimeout(() => {
+      if (this.props.item.items.length == 0) {
+        this.setState({ Empty: true });
+      } else {
+        this.setState({ Empty: false });
+      }
+    }, 2000);
   }
 
   toggle = () => {
@@ -42,30 +59,6 @@ class ShoppingList extends Component {
       });
     }
   };
-
-  // onSubmit = (e, id) => {
-  //   e.preventDefault();
-  //   if (this.state.name.length > 0) {
-  //     const newItem = {
-  //       id: uuid(),
-  //       name: this.state.name,
-  //     };
-
-  //     // Add
-  //     this.props.addItem(newItem);
-  //     // Delete
-  //     this.props.delItem(id);
-  //     // Close form
-  //     this.toggle();
-  //   } else {
-  //     Swal.fire({
-  //       icon: 'error',
-  //       title: 'Oops...',
-  //       text: 'New item name cannot be empty!',
-  //       footer: '<a href>Please go back and try again</a>',
-  //     });
-  //   }
-  // };
 
   onDeleteClick = id => {
     this.props.delItem(id);
@@ -95,7 +88,7 @@ class ShoppingList extends Component {
     const items = this.props.item.items;
     return (
       <Container>
-        {/* <h2 className="text-center">Empty</h2> */}
+        <h2 className="text-center">{this.state.Empty ? 'Empty' : ''}</h2>
 
         <ListGroup>
           <TransitionGroup className="shopping-list">
