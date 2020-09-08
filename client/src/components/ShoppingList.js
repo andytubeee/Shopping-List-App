@@ -46,6 +46,7 @@ class ShoppingList extends Component {
             {items.map(({ id, name }) => (
               <CSSTransition key={id} timeout={500} classNames="fade">
                 <ListGroupItem>
+                  {/* Edit Btn */}
                   <Button
                     className="edit-btn"
                     color="primary"
@@ -59,6 +60,7 @@ class ShoppingList extends Component {
                   >
                     Edit
                   </Button>
+                  {/* Add Btn */}
                   <Button
                     className="remove-btn"
                     color="danger"
@@ -67,11 +69,14 @@ class ShoppingList extends Component {
                       this.setState((state) => ({
                         items: state.items.filter((item) => item.id !== id),
                       }));
-                      if (items) {
-                        this.setState({
-                          isEmpty: true,
-                          emptyHeading: 'Empty',
-                        });
+
+                      if (items.length == 1) {
+                        setTimeout(() => {
+                          this.setState({
+                            isEmpty: true,
+                            emptyHeading: 'Empty',
+                          });
+                        }, 600);
                       }
                     }}
                   >
