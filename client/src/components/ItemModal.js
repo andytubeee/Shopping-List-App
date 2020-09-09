@@ -13,6 +13,7 @@ import { connect } from 'react-redux';
 import { addItem } from '../actions/itemActions';
 import PropTypes from 'prop-types';
 import { v1 as uuid } from 'uuid';
+import Swal from 'sweetalert2';
 
 class ItemModal extends Component {
   state = {
@@ -34,16 +35,25 @@ class ItemModal extends Component {
 
   onSubmit = e => {
     e.preventDefault();
-    const newItem = {
-      id: uuid(),
-      name: this.state.name,
-    };
+    if (this.state.name.length > 0) {
+      const newItem = {
+        id: uuid(),
+        name: this.state.name,
+      };
 
-    // Add to redux reducer state
-    this.props.addItems(newItem);
+      // Add to redux reducer state
+      this.props.addItems(newItem);
 
-    // Close form
-    this.toggle();
+      // Close form
+      this.toggle();
+    } else {
+      Swal.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text: 'Item name cannot be empty!',
+        footer: '<a href>Please go back and try again</a>',
+      });
+    }
   };
 
   render() {

@@ -23,27 +23,12 @@ class ShoppingList extends Component {
   state = {
     modal: false,
     name: '',
-    Empty: false,
   };
 
   componentDidMount() {
     this.props.getItems();
-    if (this.props.item.items.length == 0) {
-      this.setState({ Empty: true });
-    } else {
-      this.setState({ Empty: false });
-    }
-    console.log(this.state.Empty);
-  }
-
-  componentDidUpdate() {
-    setTimeout(() => {
-      if (this.props.item.items.length == 0) {
-        this.setState({ Empty: true });
-      } else {
-        this.setState({ Empty: false });
-      }
-    }, 2000);
+    // console.log(this.props.item.isEmpty);
+    console.log(this.props.item.items.length);
   }
 
   toggle = () => {
@@ -53,11 +38,9 @@ class ShoppingList extends Component {
   };
 
   onChange = e => {
-    if (e.target.value.length >= 0) {
-      this.setState({
-        [e.target.name]: e.target.value,
-      });
-    }
+    this.setState({
+      [e.target.name]: e.target.value,
+    });
   };
 
   onDeleteClick = id => {
@@ -70,7 +53,8 @@ class ShoppingList extends Component {
         id: uuid(),
         name: this.state.name,
       };
-      this.props.editItem({ newItem, id }); // Remove the item
+      // this.props.editItem({ newItem, id }); // Remove the item
+      this.props.delItem(id.id);
       this.props.addItem(newItem);
 
       this.toggle();
@@ -88,7 +72,9 @@ class ShoppingList extends Component {
     const items = this.props.item.items;
     return (
       <Container>
-        <h2 className="text-center">{this.state.Empty ? 'Empty' : ''}</h2>
+        <h2 className="text-center">
+          {this.props.item.isEmpty ? 'Empty' : ''}
+        </h2>
 
         <ListGroup>
           <TransitionGroup className="shopping-list">
@@ -131,7 +117,7 @@ class ShoppingList extends Component {
                     type="text"
                     name="name"
                     id="item"
-                    placeholder="Add Shopplst Item"
+                    placeholder="Edit Name"
                     onChange={this.onChange}
                   />
                 </FormGroup>
