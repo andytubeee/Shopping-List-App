@@ -27,8 +27,6 @@ class ShoppingList extends Component {
 
   componentDidMount() {
     this.props.getItems();
-    // console.log(this.props.item.isEmpty);
-    console.log(this.props.item.items.length);
   }
 
   toggle = () => {
@@ -53,7 +51,6 @@ class ShoppingList extends Component {
         id: uuid(),
         name: this.state.name,
       };
-      // this.props.editItem({ newItem, id }); // Remove the item
       this.props.delItem(id.id);
       this.props.addItem(newItem);
 
