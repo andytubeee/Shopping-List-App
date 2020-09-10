@@ -12,8 +12,8 @@ import {
 import { connect } from 'react-redux';
 import { addItem } from '../actions/itemActions';
 import PropTypes from 'prop-types';
-import { v1 as uuid } from 'uuid';
 import Swal from 'sweetalert2';
+import axios from 'axios';
 
 class ItemModal extends Component {
   state = {
@@ -37,12 +37,13 @@ class ItemModal extends Component {
     e.preventDefault();
     if (this.state.name.length > 0) {
       const newItem = {
-        id: uuid(),
         name: this.state.name,
       };
 
       // Add to redux reducer state
       this.props.addItems(newItem);
+      console.log(this.props.item.isEmpty);
+      console.log(this.props.item.items.length);
 
       // Close form
       this.toggle();

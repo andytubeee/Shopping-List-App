@@ -9,6 +9,7 @@ import {
   NavLink,
   Container,
 } from 'reactstrap';
+import axios from 'axios';
 
 class AppNavbar extends Component {
   state = {

@@ -16,8 +16,8 @@ import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import { connect } from 'react-redux';
 import { getItems, delItem, editItem, addItem } from '../actions/itemActions';
 import PropTypes from 'prop-types';
-import { v1 as uuid } from 'uuid';
 import Swal from 'sweetalert2';
+import axios from 'axios';
 
 class ShoppingList extends Component {
   state = {
@@ -27,6 +27,8 @@ class ShoppingList extends Component {
 
   componentDidMount() {
     this.props.getItems();
+    console.log(this.props.item.isEmpty);
+    console.log(this.props.item.items.length);
   }
 
   toggle = () => {
@@ -43,26 +45,32 @@ class ShoppingList extends Component {
 
   onDeleteClick = id => {
     this.props.delItem(id);
+    console.log(this.props.item.isEmpty);
+    console.log(this.props.item.items.length);
   };
 
   onEditClick = id => {
-    if (this.state.name.length > 0) {
-      const newItem = {
-        id: uuid(),
-        name: this.state.name,
-      };
-      this.props.delItem(id.id);
-      this.props.addItem(newItem);
+    alert(id._id);
+    // if (this.state.name.length > 0) {
+    //   const newItem = {
+    //     name: this.state.name,
+    //   };
+    //   this.props.delItem(id._id);
+    //   this.props.addItem(newItem);
 
-      this.toggle();
-    } else {
-      Swal.fire({
-        icon: 'error',
-        title: 'Oops...',
-        text: 'New item name cannot be empty!',
-        footer: '<a href>Please go back and try again</a>',
-      });
-    }
+    //   this.setState({
+    //     name: '',
+    //   });
+
+    //   this.toggle();
+    // } else {
+    //   Swal.fire({
+    //     icon: 'error',
+    //     title: 'Oops...',
+    //     text: 'New item name cannot be empty!',
+    //     footer: '<a href>Please go back and try again</a>',
+    //   });
+    // }
   };
 
   render() {
@@ -70,13 +78,13 @@ class ShoppingList extends Component {
     return (
       <Container>
         <h2 className="text-center">
-          {this.props.item.isEmpty ? 'Empty' : ''}
+          {/* {this.props.item.isEmpty ? 'Empty' : ''} */}
         </h2>
 
         <ListGroup>
           <TransitionGroup className="shopping-list">
-            {items.map(({ id, name }) => (
-              <CSSTransition key={id} timeout={500} classNames="fade">
+            {items.map(({ _id, name }) => (
+              <CSSTransition key={_id} timeout={500} classNames="fade">
                 <ListGroupItem>
                   {/* Edit Btn */}
                   <Button
@@ -93,7 +101,7 @@ class ShoppingList extends Component {
                     className="remove-btn"
                     color="danger"
                     size="sm"
-                    onClick={this.onDeleteClick.bind(this, id)}
+                    onClick={this.onDeleteClick.bind(this, _id)}
                   >
                     &times;
                   </Button>
@@ -103,17 +111,17 @@ class ShoppingList extends Component {
             ))}
           </TransitionGroup>
         </ListGroup>
-        {items.map((id, name) => (
+        {items.map((_id, name) => (
           <Modal isOpen={this.state.modal} toggle={this.toggle}>
             <ModalHeader toggle={this.toggle}>Edit Item</ModalHeader>
             <ModalBody>
-              <Form onSubmit={this.onEditClick.bind(this, id)}>
+              <Form onSubmit={this.onEditClick.bind(this, _id)}>
                 <FormGroup>
                   <Label for="item">Item Name</Label>
                   <Input
                     type="text"
                     name="name"
-                    id="item"
+                    _id="item"
                     placeholder="Edit Name"
                     onChange={this.onChange}
                   />
@@ -123,7 +131,7 @@ class ShoppingList extends Component {
                 color="dark"
                 style={{ marginTop: '1.5rem' }}
                 block
-                onClick={this.onEditClick.bind(this, id)}
+                onClick={this.onEditClick.bind(this, _id)}
               >
                 Edit
               </Button>
